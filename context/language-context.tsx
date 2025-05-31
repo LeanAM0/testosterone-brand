@@ -100,79 +100,113 @@ const translations: Translations = {
     en: "Each piece is crafted with precision and purpose, using premium materials that enhance performance while maintaining an aesthetic that reflects the intensity of your training.",
     es: "Cada pieza está elaborada con precisión y propósito, utilizando materiales premium que mejoran el rendimiento mientras mantienen una estética que refleja la intensidad de tu entrenamiento.",
   },
-  "learn.more": {
-    en: "Learn More",
-    es: "Saber Más",
-  },
 
   // Shop Page
   "shop.title": {
-    en: "SHOP",
-    es: "TIENDA",
+    en: "SHOP ALL",
+    es: "CATÁLOGO",
   },
-  "shop.all": {
-    en: "All",
-    es: "Todo",
+  "shop.categories": {
+    en: "Categories",
+    es: "Categorías",
   },
-  "shop.tanks": {
-    en: "Tanks",
+  "shop.category.all": {
+    en: "All Products",
+    es: "Todos los Productos",
+  },
+  "shop.category.tshirts": {
+    en: "T-Shirts",
     es: "Camisetas",
   },
-  "shop.hoodies": {
+  "shop.category.hoodies": {
     en: "Hoodies",
     es: "Sudaderas",
   },
-  "shop.compression": {
-    en: "Compression",
-    es: "Compresión",
+  "shop.category.tanks": {
+    en: "Tank Tops",
+    es: "Camisetas Sin Mangas",
   },
-  "shop.shorts": {
+  "shop.category.shorts": {
     en: "Shorts",
     es: "Pantalones Cortos",
   },
-  "shop.accessories": {
+  "shop.category.accessories": {
     en: "Accessories",
     es: "Accesorios",
   },
 
+  // Product Card
+  "product.from": {
+    en: "From",
+    es: "Desde",
+  },
+  "product.details": {
+    en: "View Details",
+    es: "Ver Detalles",
+  },
+
   // Product Page
-  "product.description": {
-    en: "Description",
-    es: "Descripción",
+  "product.features": {
+    en: "Features",
+    es: "Características",
+  },
+  "product.add.to.cart": {
+    en: "Add to Cart",
+    es: "Añadir al Carrito",
+  },
+  "product.sold.out": {
+    en: "Sold Out",
+    es: "Agotado",
   },
   "product.size": {
     en: "Size",
     es: "Talla",
   },
-  "product.features": {
-    en: "Features",
-    es: "Características",
+  "product.color": {
+    en: "Color",
+    es: "Color",
   },
-  "product.buy": {
-    en: "Buy via WhatsApp",
-    es: "Comprar por WhatsApp",
+  "product.quantity": {
+    en: "Quantity",
+    es: "Cantidad",
+  },
+  "product.shipping.note": {
+    en: "Free shipping on all orders over $50",
+    es: "Envío gratis en todos los pedidos superiores a $50",
+  },
+  "product.other.products": {
+    en: "You may also like",
+    es: "También te puede gustar",
   },
 
   // About Page
   "about.title": {
-    en: "ABOUT US",
-    es: "SOBRE NOSOTROS",
+    en: "ABOUT TESTOSTERONE",
+    es: "SOBRE TESTOSTERONE",
   },
-  "about.values": {
-    en: "OUR VALUES",
-    es: "NUESTROS VALORES",
+  "about.subtitle": {
+    en: "Forging Discipline Through Apparel",
+    es: "Forjando Disciplina a Través de la Ropa",
   },
-  "about.values.text": {
-    en: "Testosterone was born from a simple belief: that the discipline required in the gym extends to every aspect of life. Our brand stands for three core values that guide everything we do:",
-    es: "Testosterone nació de una simple creencia: que la disciplina requerida en el gimnasio se extiende a todos los aspectos de la vida. Nuestra marca representa tres valores fundamentales que guían todo lo que hacemos:",
+  "about.core.values": {
+    en: "CORE VALUES",
+    es: "VALORES FUNDAMENTALES",
   },
   "about.discipline": {
     en: "Discipline",
     es: "Disciplina",
   },
   "about.discipline.text": {
-    en: "We believe that true strength comes from consistency and dedication. Our apparel is designed for those who understand that greatness is achieved through daily commitment.",
-    es: "Creemos que la verdadera fuerza proviene de la consistencia y la dedicación. Nuestra ropa está diseñada para aquellos que entienden que la grandeza se logra a través del compromiso diario.",
+    en: "We believe that discipline is the foundation of all achievement. Our brand embodies the unwavering commitment required to transform yourself daily.",
+    es: "Creemos que la disciplina es la base de todo logro. Nuestra marca encarna el compromiso inquebrantable necesario para transformarte diariamente.",
+  },
+  "about.quality": {
+    en: "Quality",
+    es: "Calidad",
+  },
+  "about.quality.text": {
+    en: "We refuse to compromise on quality. Each garment is rigorously tested to ensure it withstands the intensity of your training and maintains its form.",
+    es: "Nos negamos a comprometer la calidad. Cada prenda es rigurosamente probada para garantizar que soporte la intensidad de tu entrenamiento y mantenga su forma.",
   },
   "about.aesthetics": {
     en: "Aesthetics",
