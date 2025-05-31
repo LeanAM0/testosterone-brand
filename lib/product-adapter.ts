@@ -34,10 +34,11 @@ export function adaptNotionProductToAppProduct(notionProduct: NotionProduct): Ap
     name: notionProduct.name,
     category: notionProduct.category,
     price: priceString,
-    image: mainImage,
-    images: imageUrls,
+    rawPrice: notionProduct.price,
     description: notionProduct.description,
-    features: featuresArray
+    features: featuresArray,
+    images: imageUrls,
+    inStock: notionProduct.inStock || true // Por defecto consideramos que está en stock
   };
 }
 
