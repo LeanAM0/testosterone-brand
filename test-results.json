@@ -1,0 +1,10 @@
+{
+  "connectionTest": true,
+  "databaseTest": true,
+  "productsTest": {
+    "success": true,
+    "count": 7,
+    "withImages": 7
+  },
+  "timestamp": "2025-05-31T21:10:30.000Z"
+}
