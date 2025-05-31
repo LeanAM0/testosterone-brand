@@ -1,18 +1,15 @@
 /**
- * Tipos comunes para la aplicación
- */
-
-/**
- * Representa un producto en la tienda
- * Esta es la estructura que utilizan los componentes de la aplicación
+ * Tipo que define la estructura de un producto en la aplicación
+ * Usado por los componentes para mostrar información de productos
  */
 export interface Product {
   id: string
   name: string
-  category: string
-  price: string
-  image: string
-  images: string[]
   description: string
+  price: string
+  rawPrice: number
+  category: string
   features: string[]
+  images: string[]
+  inStock: boolean
 }
