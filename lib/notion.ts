@@ -313,12 +313,6 @@ async function tryFetchProducts(databaseId: string): Promise<Product[] | null> {
 }
 
 export const getProducts = cache(async (): Promise<Product[]> => {
-  // SOLUCIÓN TEMPORAL: Usar datos de prueba para resolver problema de despliegue
-  console.log('Usando datos de prueba para el despliegue')
-  return getTestProductsData()
-  
-  // Código original comentado para referencia futura:
-  /*
   // 1. Intentar primero con el ID principal
   const primaryResult = await tryFetchProducts(NOTION_DATABASE_ID)
   if (primaryResult) {
@@ -339,7 +333,6 @@ export const getProducts = cache(async (): Promise<Product[]> => {
   // 3. Si todos los intentos fallan, devolver datos de prueba
   console.log('Todos los intentos de conexión a Notion fallaron, devolviendo datos de prueba')
   return getTestProductsData()
-  */
 })
 
 // Función para obtener productos por categoría
