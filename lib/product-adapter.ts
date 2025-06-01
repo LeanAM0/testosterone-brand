@@ -5,8 +5,8 @@ import { Product as AppProduct } from './types';
 // directamente desde el adaptador
 export type { Product } from './types';
 
-// Definimos una interfaz intermedia para nuestro adaptador
-// Esta interfaz representa el formato que esperan los componentes de la aplicación
+// Definimos una interfaz interna para usar en los componentes de la aplicación
+// que sea compatible con lo que esperan los componentes existentes
 export interface AppDisplayProduct {
   id: string
   name: string
@@ -83,29 +83,5 @@ export function adaptNotionProductToAppProduct(notionProduct: NotionProduct): Ap
  * Convierte una lista de productos de Notion al formato de la aplicación
  */
 export function adaptNotionProductsToAppProducts(notionProducts: NotionProduct[]): AppDisplayProduct[] {
-  // Verificar que notionProducts sea un array
-  if (!Array.isArray(notionProducts)) {
-    console.error('adaptNotionProductsToAppProducts: El parámetro notionProducts no es un array');
-    return [];
-  }
-  
-  // Mapear cada producto y manejar posibles errores
-  return notionProducts.map(product => {
-    try {
-      return adaptNotionProductToAppProduct(product);
-    } catch (error) {
-      console.error('Error al adaptar producto:', error);
-      // Devolver un producto con valores por defecto en caso de error
-      return {
-        id: 'error-product',
-        name: 'Error al cargar producto',
-        category: 'Error',
-        price: '$0.00',
-        image: '/images/products/placeholder.jpg',
-        images: ['/images/products/placeholder.jpg'],
-        description: 'No se pudo cargar la información del producto',
-        features: ['Error al procesar el producto']
-      };
-    }
-  });
+  return notionProducts.map(adaptNotionProductToAppProduct);
 }
