@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npm install --legacy-peer-deps && next build"
+    "clean": "rimraf node_modules .next",
+    "vercel-build": "npm run clean-install && next build",
+    "clean-install": "npm install --legacy-peer-deps --no-package-lock"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -45,7 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
-    "date-fns": "^2.30.0",
+    "date-fns": "^3.0.0",
     "embla-carousel-react": "8.5.1",
     "framer-motion": "latest",
     "input-otp": "1.4.1",
@@ -67,8 +69,11 @@
   "devDependencies": {
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "file-loader": "^6.2.0",
     "postcss": "^8",
+    "rimraf": "^5.0.1",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "url-loader": "^4.1.1"
   }
 }
