@@ -74,6 +74,38 @@
   }
   body {
     @apply bg-background text-foreground;
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  /* Molécula de testosterona en el fondo */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    height: 500px;
+    background-image: url('/images/testosterone-molecule.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.05;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    animation: floatMolecule 20s infinite linear;
+  }
+  
+  @keyframes floatMolecule {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) rotate(180deg) scale(1.05);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg) scale(1);
+    }
   }
   h1,
   h2,
@@ -118,4 +150,10 @@
 
 .product-card:hover .product-info {
   opacity: 1;
+}
+
+.product-info {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: rgba(0, 0, 0, 0.8);
 }
