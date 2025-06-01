@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useMotionValue, useSpring, motion } from "framer-motion"
 import Image from "next/image"
 import { useMediaQuery } from "@/hooks/use-media-query"
@@ -9,7 +9,17 @@ interface TestosteroneMoleculeProps {
   className?: string
 }
 
+/**
+ * TestosteroneMolecule: Componente interactivo que muestra una molécula de testosterona
+ * que reacciona al movimiento del cursor o a la orientación del dispositivo móvil.
+ * 
+ * Optimizado para funcionar correctamente tanto en desarrollo local como en Vercel.
+ */
 export default function TestosteroneMolecule({ className = "" }: TestosteroneMoleculeProps) {
+  // Estado para controlar si estamos en el navegador o en SSR
+  const [isBrowser, setIsBrowser] = useState(false)
+  
+  // Valores de movimiento para la animación
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -17,12 +27,22 @@ export default function TestosteroneMolecule({ className = "" }: TestosteroneMol
   const springConfig = { damping: 25, stiffness: 100 }
   const x = useSpring(mouseX, springConfig)
   const y = useSpring(mouseY, springConfig)
+  
+  // Efecto para establecer que estamos en el navegador
+  useEffect(() => {
+    setIsBrowser(true)
+  }, [])
 
   useEffect(() => {
-    if (isMobile) return // Disable mouse movement on mobile
+    if (isMobile) return // Deshabilitar movimiento por ratón en móvil
+    if (typeof window === 'undefined') return // Evitar ejecución durante SSR
+
+    // Inicialización para evitar valores nulos
+    mouseX.set(0)
+    mouseY.set(0)
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Calculate mouse position relative to the center of the window
+      // Calcular posición del ratón relativa al centro de la ventana
       mouseX.set((e.clientX - window.innerWidth / 2) / 20)
       mouseY.set((e.clientY - window.innerHeight / 2) / 20)
     }
@@ -33,32 +53,43 @@ export default function TestosteroneMolecule({ className = "" }: TestosteroneMol
     }
   }, [mouseX, mouseY, isMobile])
 
-  // Handle device orientation for mobile
+  // Manejar orientación del dispositivo para móviles
   useEffect(() => {
     if (!isMobile) return
+    if (typeof window === 'undefined') return // Evitar ejecución durante SSR
+
+    // Inicialización para evitar valores nulos
+    mouseX.set(0)
+    mouseY.set(0)
 
     const handleOrientation = (e: DeviceOrientationEvent) => {
       if (e.beta && e.gamma) {
-        mouseX.set(e.gamma / 2) // Left/right tilt
-        mouseY.set(e.beta / 2) // Front/back tilt
+        mouseX.set(e.gamma / 2) // Inclinación izquierda/derecha
+        mouseY.set(e.beta / 2) // Inclinación adelante/atrás
       }
     }
 
-    window.addEventListener("deviceorientation", handleOrientation)
-    return () => {
-      window.removeEventListener("deviceorientation", handleOrientation)
+    try {
+      window.addEventListener("deviceorientation", handleOrientation)
+      return () => {
+        window.removeEventListener("deviceorientation", handleOrientation)
+      }
+    } catch (error) {
+      console.error("Error con eventos de orientación:", error)
+      return () => {}
     }
   }, [mouseX, mouseY, isMobile])
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      <motion.div
-        className="w-full h-full flex items-center justify-center"
-        style={{
-          x,
-          y,
-        }}
-      >
+      {isBrowser && (
+        <motion.div
+          className="w-full h-full flex items-center justify-center"
+          style={{
+            x,
+            y,
+          }}
+        >
         <div
           className="relative opacity-20 w-full h-full flex items-center justify-center"
           style={{
@@ -76,6 +107,7 @@ export default function TestosteroneMolecule({ className = "" }: TestosteroneMol
           </div>
         </div>
       </motion.div>
+      )}
     </div>
   )
 }
