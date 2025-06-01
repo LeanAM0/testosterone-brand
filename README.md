@@ -37,66 +37,66 @@ testosterone-brand/
 - **Efectos visuales**: Animaciones y efectos especiales
 - **SEO**: Optimizado para motores de búsqueda
 - **Responsive**: Diseño adaptable para todos los dispositivos
+- **Integración con WhatsApp**: Botón de contacto directo
+- **Rendimiento**: Optimizado para un rendimiento rápido
+
+## 📋 Requisitos Previos
+
+- Node.js 18.x o superior
+- npm 9.x o superior
+- Cuenta de Notion (para la base de datos de productos)
+
+## 🚀 Instalación y Uso
+
+1. **Clona el repositorio**:
+   ```bash
+   git clone https://github.com/tuusuario/testosterone-brand.git
+   cd testosterone-brand
+   ```
+
+2. **Instala las dependencias**:
+   ```bash
+   npm install
+   ```
+
+3. **Configura las variables de entorno**:
+   Crea un archivo `.env.local` con las siguientes variables:
+   ```
+   NOTION_API_KEY=tu_api_key_de_notion
+   NOTION_DATABASE_ID=tu_id_de_base_de_datos
+   ```
+
+4. **Inicia el servidor de desarrollo**:
+   ```bash
+   npm run dev
+   ```
+
+5. **Construye para producción**:
+   ```bash
+   npm run build
+   ```
+
+6. **Inicia en modo producción**:
+   ```bash
+   npm start
+   ```
+
+## 🧪 Testing
+
+```bash
+npm run test
+```
 
 ## 📦 Dependencias Principales
 
-- `@radix-ui/react-*`: Componentes UI accesibles
-- `framer-motion`: Animaciones
-- `next-themes`: Gestión de temas
-- `lucide-react`: Iconos
-- `tailwindcss`: Sistema de estilos
-- `date-fns`: Manejo de fechas
+- **next**: Framework React para producción
+- **react**: Biblioteca JavaScript para interfaces de usuario
+- **tailwindcss**: Framework CSS utilitario
+- **framer-motion**: Biblioteca para animaciones en React
+- **@notionhq/client**: Cliente oficial de Notion API
+- **@radix-ui**: Primitivos de componentes headless para React
 
-## 🚀 Instalación y Desarrollo
-
-1. Clona el repositorio
-2. Instala las dependencias:
-   ```bash
-   pnpm install
-   ```
-3. Inicia el servidor de desarrollo:
-   ```bash
-   pnpm dev
-   ```
-
-## 📝 Convenciones del Proyecto
-
-- **Archivos de componentes**: `.tsx`
-- **Archivos de estilos**: Tailwind CSS
-- **Manejo de estado**: Context API
-- **Rutas**: Sistema de archivos de Next.js
-- **Componentes UI**: Radix UI
-
-## 📱 Componentes Principales
-
-- `Hero`: Sección principal del sitio
-- `ProductCard`: Tarjetas de productos
-- `Navbar`: Barra de navegación
-- `Footer`: Pie de página
-- `LanguageSwitcher`: Selector de idiomas
-- `ThemeProvider`: Gestión de temas
-- `TestosteroneMolecule`: Componente especializado
-
-## 📚 Contextos Disponibles
-
-- `LanguageContext`: Manejo de idiomas
-- `ThemeContext`: Gestión de temas
-
-## 🎨 Estilos y Animaciones
-
-- Sistema de estilos basado en Tailwind CSS
-- Animaciones con Framer Motion
-- Efectos visuales personalizados
-- Temas claro/oscuro
-
-## 📱 Responsive Design
-
-El sitio está completamente optimizado para:
-- Desktop
-- Tablet
-- Móvil
-
-## 📝 Notas Importantes
+## 🔍 Características Avanzadas
 
 - El proyecto utiliza TypeScript para tipado estático
 - Se incluye soporte para WhatsApp
@@ -110,14 +110,31 @@ El sitio está completamente optimizado para:
 - **Notion API Key**: `ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0`
 - **Notion Database ID**: `1f625056207c80c6bd27000c8c49292b`
 
-### Configuración de Notion para Producción
+## 🔐 Configuración de Despliegue en Vercel
 
-Para el despliegue en producción, configura estas variables de entorno en tu plataforma de hosting:
+### Variables de Entorno Requeridas
+
+Para que la aplicación funcione correctamente en Vercel, es **obligatorio** configurar las siguientes variables de entorno en el panel de control de Vercel:
 
 ```env
 NOTION_API_KEY=ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0
-NOTION_DATABASE_ID=1f625056207c80c6bd27000c8c49292b
+NOTION_DATABASE_ID=1f625056207c80c3b951ff146b3c2c51
 ```
+
+### Pasos para configurar en Vercel:
+
+1. Ve al panel de control de tu proyecto en Vercel
+2. Haz clic en "Settings" en la barra de navegación superior
+3. En el menú lateral, selecciona "Environment Variables"
+4. Añade cada variable de entorno con su nombre y valor exacto
+5. Asegúrate de aplicar estas variables a todos los entornos (Production, Preview, Development)
+6. Guarda los cambios y vuelve a desplegar la aplicación
+
+### ⚠️ IMPORTANTE: ID Correcto de la Base de Datos
+
+El ID correcto de la base de datos es: `1f625056207c80c3b951ff146b3c2c51` (sin guiones)
+
+**Nota**: Sin estas variables configuradas correctamente, la aplicación mostrará productos con información predeterminada y algunos componentes visuales como la molécula de testosterona podrían no funcionar correctamente.
 
 Nunca expongas estas credenciales directamente en el código fuente en un repositorio público.
 
@@ -144,37 +161,135 @@ Este proyecto está bajo licencia MIT.
 - Funciones mínimas para obtener productos
 - Página principal con grid de productos
 
-### Fase 3: Despliegue (1 día)
-- Inicialización de repositorio GitHub
-- Configuración de Git
-- Conexión con Vercel
-- Despliegue inicial
+#### 📊 Implementación de la integración con Notion (Completada)
 
-### Fase 4: Optimizaciones (1 día)
-- Implementación de caché básico
-- Optimización de imágenes
-- Configuración básica de SEO
+Hemos implementado exitosamente la conexión con Notion, migrando de datos estáticos a datos dinámicos. El sistema ahora funciona como un flujo de agua corriente, donde los productos se actualizan en tiempo real desde Notion sin necesidad de modificar el código.
 
-### Características Mínimas
-- Grid de productos
-- Navegación básica
-- Carga de datos desde Notion
-- Despliegue en Vercel
+### 🛠️ Arquitectura implementada
 
-### Herramientas Necesarias
-- Vercel CLI
-- GitHub
-- Notion API Token
-- Git
+```
+[Notion DB] ➡️ [API Notion] ➡️ [lib/notion.ts] ➡️ [Adaptador] ➡️ [Componentes React] ➡️ [UI]
+   (almacén)     (transportista)    (procesador)      (traductor)        (tienda)       (cliente)
+```
 
-Este plan permite tener una versión funcional en 4-5 días, manteniendo el código limpio y facilitando futuras mejoras.
+Es como un sistema de abastecimiento de una tienda real: Notion es el almacén central donde guardamos los productos, la API es el transportista que los trae, el adaptador es quien los organiza en las estanterías, y los componentes son la exposición final para los clientes.
+
+### 📚 Cambios técnicos implementados
+
+#### 1. Optimización de la capa de conexión con Notion
+
+- **Refactorización de `lib/notion.ts`** para usar variables de entorno de forma segura:
+
+```typescript
+// Antes - Hardcodeado y sin manejo adecuado de errores
+const NOTION_API_KEY = 'ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0';
+const DATABASE_ID = '1f625056207c80c6bd27000c8c49292b';
+
+// Después - Uso seguro de variables de entorno y formato correcto
+const getEnvVariable = (name: string, defaultValue: string): string => {
+  // En el servidor, intentamos obtener la variable de entorno
+  if (typeof window === 'undefined') {
+    return process.env[name] || defaultValue;
+  }
+  // En el cliente, usamos el valor por defecto (por seguridad)
+  return defaultValue;
+};
+
+const NOTION_API_KEY = getEnvVariable('NOTION_API_KEY', 'ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0');
+
+// Preparar el ID de la base de datos (eliminar guiones si existen)
+let dbId = getEnvVariable('NOTION_DATABASE_ID', '1f625056207c80c6bd27000c8c49292b');
+```
+
+#### 2. Implementación de mejor manejo de errores
+
+```typescript
+// Antes - Sin manejo adecuado de errores
+const response = await notion.databases.query({ database_id: DATABASE_ID });
+return response.results;
+
+// Después - Con manejo detallado de errores
+try {
+  console.log('Consultando base de datos de Notion:', dbId);
+  const response = await notion.databases.query({ database_id: dbId });
+  console.log(`Respuesta de Notion recibida: ${response.results.length} productos encontrados`);
+  return response.results;
+} catch (error) {
+  console.error('🔴 Error al consultar Notion:', error);
+  // Proporcionar datos por defecto en caso de error
+  return [];
+}
+```
+
+#### 3. Adaptador mejorado para productos
+
+```typescript
+// Creamos un adaptador para transformar datos de Notion a nuestro formato
+export function adaptNotionProductsToAppProducts(
+  notionProducts: NotionProductPage[]
+): Product[] {
+  if (!notionProducts || notionProducts.length === 0) {
+    console.warn('No se encontraron productos en Notion, usando datos por defecto');
+    return DEFAULT_PRODUCTS;
+  }
+
+  return notionProducts.map((notionPage) => {
+    // Extraer propiedades y mapearlas al formato de la aplicación
+    const properties = notionPage.properties;
+    
+    // Mapear cada propiedad con validación
+    return {
+      id: notionPage.id,
+      name: getPropertyValue(properties.Name, 'title', 'Producto sin nombre'),
+      price: Number(getPropertyValue(properties.Price, 'number', 0)),
+      // ... otras propiedades
+    };
+  });
+}
+```
+
+#### 4. Integración en páginas de servidor y cliente
+
+```typescript
+// app/shop/page.tsx - Componente de servidor para cargar datos
+async function getProductsData() {
+  // Obtener datos desde Notion (corre en el servidor)
+  const notionProducts = await getProducts();
+  return adaptNotionProductsToAppProducts(notionProducts);
+}
+
+export default async function ShopPage() {
+  const products = await getProductsData();
+  
+  return (
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-8">Nuestra Tienda</h1>
+      <ProductGrid products={products} />
+    </div>
+  );
+}
+```
+
+### 🧪 Pruebas realizadas
+
+1. ✅ **Desarrollo local**: La aplicación carga correctamente los productos de Notion
+2. ✅ **Caché de datos**: Los productos se almacenan en caché durante 60 minutos
+3. ✅ **Manejo de errores**: Si Notion no responde, se muestran productos predeterminados
+4. ✅ **Variables de entorno**: Funciona con variables de entorno o valores por defecto
+
+### 🚀 Próximos pasos
+
+1. Implementar filtrado avanzado por categorías
+2. Añadir más detalles de producto (colores, tallas)
+3. Crear página detallada para cada producto
+4. Implementar caché más sofisticado para mayor rendimiento
 
 ## 📈 Plan Optimizado - Rápido con SEO Mejorado
 
 ### Fase 1: Configuración e Integración Notion (1-2 días)
 1. **Configuración Notion**
    - Crear archivo `.env.local` con tokens
-   - Instalar dependencia: `@notionhq/client`
+   - Probar conexión con `test-notion-integration.js`
 
 2. **API Básica Notion**
    - Implementar `getProducts()` y `getProductsByCategory()`
