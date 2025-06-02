@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useMotionValue, useSpring, motion } from "framer-motion"
-import Image from "next/image"
 import { useMediaQuery } from "@/hooks/use-media-query"
+
+// Solución alternativa: Usaremos la imagen de TikTok como respaldo ya que sabemos que funciona
+const TIKTOK_LOGO_URL = "/images/tiktok-logo.png";
 
 export default function TestosteroneMolecule({ className = "" }) {
   const [isBrowser, setIsBrowser] = useState(false)
-  const [imageSrc, setImageSrc] = useState("/images/testosterone-molecule.png")
-  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
   const isMobile = useMediaQuery("(max-width: 768px)")
@@ -17,50 +18,11 @@ export default function TestosteroneMolecule({ className = "" }) {
   const x = useSpring(mouseX, springConfig)
   const y = useSpring(mouseY, springConfig)
 
-  // Efecto para establecer que estamos en el navegador y probar diferentes rutas de imágenes
+  // Efecto para establecer que estamos en el navegador
   useEffect(() => {
     setIsBrowser(true)
-    
-    // Log para depuración
-    console.log("TestosteroneMolecule: Componente montado");
-    console.log("TestosteroneMolecule: Intentando cargar imagen de ruta inicial:", imageSrc);
-    
-    // Lista de posibles rutas para probar
-    const potentialPaths = [
-      "/images/testosterone-molecule.png",
-      "testosterone-molecule.png",
-      "/testosterone-molecule.png",
-      "/public/images/testosterone-molecule.png",
-      "/images/tiktok-logo.png" // Esta funciona según lo que mencionaste, podemos usarla temporalmente
-    ];
-    
-    // Función para probar si una imagen se carga correctamente
-    const testImage = (path) => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = path;
-      });
-    };
-    
-    // Probar cada ruta hasta encontrar una que funcione
-    const findWorkingImage = async () => {
-      for (const path of potentialPaths) {
-        console.log(`Probando ruta de imagen: ${path}`);
-        const works = await testImage(path);
-        if (works) {
-          console.log(`¡Ruta funcionando encontrada!: ${path}`);
-          setImageSrc(path);
-          setImageLoaded(true);
-          return;
-        }
-      }
-      console.error("No se pudo cargar la imagen desde ninguna ruta");
-    };
-    
-    findWorkingImage();
-  }, []);
+    console.log("TestosteroneMolecule: Componente montado usando solución alternativa");
+  }, [])
 
   useEffect(() => {
     if (isMobile) return
@@ -104,17 +66,6 @@ export default function TestosteroneMolecule({ className = "" }) {
     return null // Evita renderizar en el servidor para prevenir errores de hidratación
   }
 
-  // Si estamos en el navegador pero la imagen no se ha cargado, mostrar un placeholder
-  if (!imageLoaded) {
-    return (
-      <div className={`relative ${className} bg-gray-800 animate-pulse rounded-full`}>
-        <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-          Cargando molécula...
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={`relative ${className}`}>
       <motion.div
@@ -124,20 +75,45 @@ export default function TestosteroneMolecule({ className = "" }) {
           y,
         }}
       >
-        <img
-          src={imageSrc}
-          alt="Testosterone Molecule"
-          className="w-full h-auto"
-          onError={(e) => {
-            console.error("Error cargando imagen de molécula:", e);
-            // Si hay error, intentamos mostrar un placeholder
-            setImageLoaded(false);
-          }}
-          onLoad={() => {
-            console.log("Imagen de molécula cargada correctamente desde:", imageSrc);
-            setImageLoaded(true);
-          }}
-        />
+        {/* Esta es una solución temporal - Usamos SVG en lugar de PNG */}
+        {!imageError ? (
+          <svg 
+            viewBox="0 0 200 200" 
+            className="w-full h-auto"
+            style={{ maxWidth: "500px" }}
+          >
+            {/* Estructura simplificada de la molécula de testosterona */}
+            <g fill="none" stroke="currentColor" strokeWidth="2">
+              {/* Anillos hexagonales y pentagonales */}
+              <path d="M50,100 L70,80 L100,80 L120,100 L100,120 L70,120 Z" />
+              <path d="M120,100 L140,80 L170,80 L190,100 L170,120 L140,120 Z" />
+              <path d="M10,100 L30,80 L50,100 L30,120 Z" />
+              
+              {/* Enlaces entre anillos */}
+              <line x1="50" y1="100" x2="10" y2="100" />
+              <line x1="120" y1="100" x2="140" y2="100" />
+              
+              {/* Grupos químicos */}
+              <circle cx="30" cy="60" r="10" />
+              <circle cx="170" cy="60" r="10" />
+              
+              {/* Enlaces a grupos */}
+              <line x1="30" y1="80" x2="30" y2="70" />
+              <line x1="170" y1="80" x2="170" y2="70" />
+            </g>
+            <text x="60" y="150" fill="currentColor" fontSize="10">Testosterone C19H28O2</text>
+          </svg>
+        ) : (
+          <img 
+            src={TIKTOK_LOGO_URL} 
+            alt="Logo alternativo" 
+            className="w-full h-auto"
+            onError={() => {
+              console.error("Error cargando imagen alternativa");
+              // No cambiamos estado para evitar loop infinito
+            }}
+          />
+        )}
       </motion.div>
     </div>
   )
