@@ -1,324 +1,227 @@
-# Testosterone Brand Website
+# 🏋️ Testosterone Brand
 
-Este es un sitio web moderno para una marca de productos relacionados con la testosterona, desarrollado con Next.js y TypeScript.
+> Página web de marca de ropa de entrenamiento, construida con Next.js, TypeScript, Tailwind CSS, y alimentada por Notion como base de datos.
 
-## 🚀 Tecnologías Principales
+## 📋 Contenido
 
-- **Framework**: Next.js 15.2.4
-- **Lenguaje**: TypeScript
-- **Estilos**: Tailwind CSS
-- **Componentes UI**: Radix UI
-- **Animaciones**: Framer Motion
-- **Gestión de Estado**: Context API
-- **Internacionalización**: Sistema de traducción propio
-- **Tema**: Soporte para temas claro/oscuro
+- [Características](#características)
+- [Tecnologías](#tecnologías)
+- [Instalación](#instalación)
+- [Configuración de variables de entorno](#configuración-de-variables-de-entorno)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Integración con Notion](#integración-con-notion)
+- [Problemas conocidos de despliegue](#problemas-conocidos-de-despliegue)
 
-## 📁 Estructura del Proyecto
+## ✨ Características
+
+- Diseño responsivo y moderno
+- Catálogo de productos con filtros
+- Detalles de producto
+- Carrito de compras
+- Animaciones suaves con Framer Motion
+- Integración con Notion como headless CMS
+
+## 🛠️ Tecnologías
+
+- **Next.js 15.2.4** - Framework de React
+- **TypeScript** - Tipado estático para JavaScript
+- **Tailwind CSS** - Framework CSS utilitario
+- **Radix UI** - Componentes accesibles y sin estilo
+- **Framer Motion** - Biblioteca de animaciones
+- **Context API** - Gestión de estado global
+- **Notion API** - Headless CMS para datos de productos
+
+## 🚀 Instalación
+
+1. **Clona el repositorio**
+
+```bash
+git clone https://github.com/tu-usuario/testosterone-brand.git
+cd testosterone-brand
+```
+
+2. **Instala las dependencias**
+
+```bash
+npm install
+```
+
+3. **Configura las variables de entorno**
+
+Crea un archivo `.env.local` en la raíz del proyecto y añade las siguientes variables:
+
+```
+NOTION_API_KEY=tu_api_key_de_notion
+NOTION_DATABASE_ID=tu_database_id_de_notion
+```
+
+4. **Inicia el servidor de desarrollo**
+
+```bash
+npm run dev
+```
+
+5. **Abre tu navegador**
+
+El proyecto estará disponible en [http://localhost:3000](http://localhost:3000)
+
+## 🔑 Configuración de variables de entorno
+
+### Variables locales
+
+Para desarrollo local, crea un archivo `.env.local` con:
+
+```
+NOTION_API_KEY=tu_api_key_de_notion
+NOTION_DATABASE_ID=tu_database_id_de_notion
+```
+
+### Variables en Vercel
+
+Para despliegue en Vercel:
+
+1. Ve a tu proyecto en el [Dashboard de Vercel](https://vercel.com/dashboard)
+2. Navega a Settings > Environment Variables
+3. Añade `NOTION_API_KEY` y `NOTION_DATABASE_ID` con sus respectivos valores
+4. Redespliega el proyecto para que tome las nuevas variables
+
+## 📁 Estructura del proyecto
 
 ```
 testosterone-brand/
-├── app/              # Páginas de la aplicación
-├── components/       # Componentes reutilizables
-│   ├── ui/          # Componentes UI de Radix
-│   └── ...          # Componentes personalizados
-├── context/         # Contextos de React
-├── hooks/           # Hooks personalizados
-├── lib/             # Funciones utilitarias y datos
-├── public/          # Assets estáticos
-└── styles/          # Estilos globales
+├── app/               # Rutas y páginas de Next.js
+├── components/        # Componentes reutilizables
+├── context/           # Contextos de React
+├── hooks/             # Hooks personalizados
+├── lib/               # Utilidades y funciones
+├── public/            # Archivos estáticos
+│   └── images/        # Imágenes
+├── styles/            # Estilos globales
+├── types/             # Definiciones de tipos TypeScript
+├── .env.local         # Variables de entorno local (no en git)
+├── next.config.js     # Configuración de Next.js
+└── package.json       # Dependencias y scripts
 ```
 
-## 🛠️ Características Principales
+## 🔄 Integración con Notion
 
-- **Multi-idioma**: Soporte para múltiples idiomas
-- **Tema adaptable**: Soporte para temas claro/oscuro
-- **Optimización**: Carga perezosa y optimización de imágenes
-- **Componentes reutilizables**: Sistema robusto de componentes
-- **Efectos visuales**: Animaciones y efectos especiales
-- **SEO**: Optimizado para motores de búsqueda
-- **Responsive**: Diseño adaptable para todos los dispositivos
+### Configuración de la base de datos en Notion
 
-## 📦 Dependencias Principales
+1. Crea una base de datos en Notion con las siguientes propiedades:
+   - `Name` (título)
+   - `Description` (texto enriquecido)
+   - `Price` (número)
+   - `Category` (selección)
+   - `Image` (URL o archivos)
+   - `Stock` (número)
+   - `Featured` (checkbox)
 
-- `@radix-ui/react-*`: Componentes UI accesibles
-- `framer-motion`: Animaciones
-- `next-themes`: Gestión de temas
-- `lucide-react`: Iconos
-- `tailwindcss`: Sistema de estilos
-- `date-fns`: Manejo de fechas
+2. Crea una integración en [Notion Developers](https://www.notion.so/my-integrations)
+   - Obtén tu `API Key`
+   - Otorga acceso a tu integración a la base de datos
 
-## 🚀 Instalación y Desarrollo
+3. Obtén el ID de tu base de datos desde la URL:
+   - `https://www.notion.so/workspace/ESTE-ES-TU-ID-DE-BASE-DE-DATOS?...`
+   - Asegúrate de usar el ID sin guiones para las variables de entorno
 
-1. Clona el repositorio
-2. Instala las dependencias:
-   ```bash
-   pnpm install
-   ```
-3. Inicia el servidor de desarrollo:
-   ```bash
-   pnpm dev
-   ```
+### Uso en el código
 
-## 📝 Convenciones del Proyecto
-
-- **Archivos de componentes**: `.tsx`
-- **Archivos de estilos**: Tailwind CSS
-- **Manejo de estado**: Context API
-- **Rutas**: Sistema de archivos de Next.js
-- **Componentes UI**: Radix UI
-
-## 📱 Componentes Principales
-
-- `Hero`: Sección principal del sitio
-- `ProductCard`: Tarjetas de productos
-- `Navbar`: Barra de navegación
-- `Footer`: Pie de página
-- `LanguageSwitcher`: Selector de idiomas
-- `ThemeProvider`: Gestión de temas
-- `TestosteroneMolecule`: Componente especializado
-
-## 📚 Contextos Disponibles
-
-- `LanguageContext`: Manejo de idiomas
-- `ThemeContext`: Gestión de temas
-
-## 🎨 Estilos y Animaciones
-
-- Sistema de estilos basado en Tailwind CSS
-- Animaciones con Framer Motion
-- Efectos visuales personalizados
-- Temas claro/oscuro
-
-## 📱 Responsive Design
-
-El sitio está completamente optimizado para:
-- Desktop
-- Tablet
-- Móvil
-
-## 📝 Notas Importantes
-
-- El proyecto utiliza TypeScript para tipado estático
-- Se incluye soporte para WhatsApp
-- Se implementan efectos visuales personalizados
-- El sitio está optimizado para SEO
-
-## 🔑 Credenciales de Notion
-
-> ⚠️ **IMPORTANTE**: Estas credenciales son solo para desarrollo. En producción, utiliza variables de entorno seguras.
-
-- **Notion API Key**: `ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0`
-- **Notion Database ID**: `1f625056207c80c6bd27000c8c49292b`
-
-## 🔐 Configuración de Despliegue en Vercel
-
-### Variables de Entorno Requeridas
-
-Para que la aplicación funcione correctamente en Vercel, es **obligatorio** configurar las siguientes variables de entorno en el panel de control de Vercel:
-
-```env
-NOTION_API_KEY=ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0
-NOTION_DATABASE_ID=1f625056207c80c3b951ff146b3c2c51
-```
-
-### Pasos para configurar en Vercel:
-
-1. Ve al panel de control de tu proyecto en Vercel
-2. Haz clic en "Settings" en la barra de navegación superior
-3. En el menú lateral, selecciona "Environment Variables"
-4. Añade cada variable de entorno con su nombre y valor exacto
-5. Asegúrate de aplicar estas variables a todos los entornos (Production, Preview, Development)
-6. Guarda los cambios y vuelve a desplegar la aplicación
-
-### ⚠️ IMPORTANTE: ID Correcto de la Base de Datos
-
-El ID correcto de la base de datos es: `1f625056207c80c3b951ff146b3c2c51` (sin guiones)
-
-**Nota**: Sin estas variables configuradas correctamente, la aplicación mostrará productos con información predeterminada y algunos componentes visuales como la molécula de testosterona podrían no funcionar correctamente.
-
-Nunca expongas estas credenciales directamente en el código fuente en un repositorio público.
-
-## 🔍 Soluciones para Problemas de Despliegue
-
-> 🆕 **NUEVA SECCIÓN: Añadida el 01-06-2025**
-
-### Problemas Conocidos
-
-Hemos identificado dos problemas principales en el despliegue en Vercel:
-
-1. **Imagen de molécula de testosterona no se muestra** - La imagen de fondo con la molécula no aparece en el despliegue aunque existe en el repositorio.
-
-2. **Conexión con Notion no funciona** - Los productos no se cargan desde la base de datos de Notion en el despliegue.
-
-### Soluciones Implementadas para Diagnóstico
-
-Para diagnosticar y solucionar estos problemas, hemos implementado las siguientes mejoras:
-
-#### 1. Mejora en Componente TestosteroneMolecule
-
-Hemos añadido logs de depuración al componente de la molécula para entender mejor qué está sucediendo con la carga de la imagen:
-
-```tsx
-// Logs para el ciclo de vida del componente
-useEffect(() => {
-  // Log de montaje del componente
-  console.log("TestosteroneMolecule: Componente montado");
-  console.log("TestosteroneMolecule: Ruta de imagen:", "/images/testosterone-molecule.png");
-}, [])
-
-// Manejadores de eventos para la imagen
-<Image
-  src="/images/testosterone-molecule.png"
-  alt="Testosterone Molecule"
-  onError={(e) => {
-    console.error("Error cargando imagen de molécula:", e);
-  }}
-  onLoad={() => {
-    console.log("Imagen de molécula cargada correctamente");
-  }}
-/>
-```
-
-Es como añadir sensores a un coche para detectar exactamente qué parte está fallando.
-
-#### 2. Endpoint de Diagnóstico de Variables de Entorno
-
-Hemos creado un nuevo endpoint en `/api/test-env` que nos permite verificar si las variables de entorno se están cargando correctamente en Vercel:
+El archivo `lib/notion.ts` contiene las funciones para interactuar con Notion:
 
 ```typescript
-// app/api/test-env/route.ts
-export async function GET() {
-  // Mostramos información sobre las variables de entorno
-  const envInfo = {
-    apiKey: process.env.NOTION_API_KEY 
-      ? `${process.env.NOTION_API_KEY.substring(0, 4)}...` 
-      : 'No definido',
-    dbId: process.env.NOTION_DATABASE_ID || 'No definido',
-    // Más información útil para diagnóstico...
-  };
-  
-  return NextResponse.json(envInfo);
+import { Client } from '@notionhq/client';
+
+// Inicializa el cliente de Notion con la API Key
+const notion = new Client({
+  auth: process.env.NOTION_API_KEY,
+});
+
+// Obtener todos los productos
+export async function getProducts() {
+  // Implementación...
+}
+
+// Obtener un producto por ID
+export async function getProductById(id: string) {
+  // Implementación...
 }
 ```
 
-Es como crear una ventana de inspección para ver lo que realmente está sucediendo con las variables de entorno.
+## 🚧 Problemas conocidos de despliegue
 
-### Cómo Verificar los Resultados
+Durante el despliegue a Vercel, hemos identificado dos problemas principales:
 
-1. **Para problemas con la imagen**:
-   - Abre la consola del navegador (F12) cuando visites el sitio
-   - Busca mensajes relacionados con "TestosteroneMolecule" o errores de carga de imagen
-   
-2. **Para problemas con Notion**:
-   - Visita `[tu-url-de-vercel]/api/test-env`
-   - Comprueba si las variables de entorno se están mostrando correctamente
+### 1️⃣ Problema con la carga de imágenes estáticas
 
-> ⚠️ **NOTA**: El endpoint de diagnóstico debe eliminarse después de resolver los problemas, ya que muestra información parcial de las credenciales.
+**Síntomas:**
+- Errores 404 al cargar imágenes
+- Consola muestra errores como: `Failed to load resource: the server responded with a status of 404 ()`
+- Afecta a imágenes como `testosterone-molecule.png`, `fitness-bg.jpg`, etc.
 
-## 📝 Contribución
+**Soluciones intentadas:**
+1. **Corregir nombres de archivos en el código**:
+   - Verificamos que los nombres en el código coincidieran con los archivos en `/public/images`
+   - La imagen `testosterone-molecule.png` existe en el repositorio pero sigue sin cargarse
 
-1. Clona el repositorio
-2. Crea una rama para tu funcionalidad
-3. Realiza los cambios necesarios
-4. Envía un Pull Request
+2. **Implementar un "detective de rutas"**:
+   - Creamos un sistema que prueba múltiples rutas posibles para las imágenes
+   - Intentamos con variaciones como `/images/...`, `public/images/...`, etc.
 
-## 📝 Licencia
+3. **Reemplazar imágenes con SVG**:
+   - Implementamos una versión SVG de la molécula directamente en el código
+   - Esto eliminaba la dependencia de archivos externos
 
-Este proyecto está bajo licencia MIT.
+4. **Simplificar completamente el componente**:
+   - Creamos una versión simplificada usando solo HTML y CSS
+   - Sin dependencias de imágenes o SVG complejos
 
-## 📋 Plan de Implementación Simplificado
+**Posibles causas del problema:**
+1. **Configuración incorrecta de Next.js**: El archivo `next.config.mjs` podría no estar configurado correctamente para manejar imágenes estáticas en Vercel.
+2. **Caché de Vercel**: El sistema de caché podría estar sirviendo versiones antiguas de los archivos.
+3. **Problemas de routing**: La estructura de carpetas en Vercel podría no coincidir con la local.
+4. **Compilación incompleta**: El proceso de build podría no estar copiando correctamente los archivos estáticos.
 
-### Fase 1: Configuración Básica (1-2 días)
-- Estructura básica Next.js + TypeScript
-- Configuración de variables de entorno para Notion
-- Componentes esenciales: ProductCard, Navbar y Footer
+### 2️⃣ Problemas con variables de entorno de Notion
 
-### Fase 2: Integración Notion (1 día)
-- Conexión básica con Notion API
-- Funciones mínimas para obtener productos
-- Página principal con grid de productos
+**Síntomas:**
+- La página de productos no carga datos
+- No hay errores visibles relacionados con la API de Notion
+- El endpoint de diagnóstico `/api/test-env` devuelve 404
 
-#### 📊 Implementación de la integración con Notion (Completada)
+**Soluciones implementadas:**
+1. **Página de diagnóstico**: Se creó una página en `/diagnostico` para mostrar el estado del sistema
+2. **API de prueba**: Se implementó un endpoint `/api/test-env` para verificar las variables de entorno
 
-Hemos implementado exitosamente la conexión con Notion, migrando de datos estáticos a datos dinámicos. El sistema ahora funciona como un flujo de agua corriente, donde los productos se actualizan en tiempo real desde Notion sin necesidad de modificar el código.
+**Posibles causas:**
+1. **Variables no configuradas**: Las variables `NOTION_API_KEY` y `NOTION_DATABASE_ID` podrían no estar configuradas correctamente en el panel de Vercel.
+2. **Formato incorrecto**: El ID de la base de datos podría tener formato incorrecto (con o sin guiones).
+3. **Problemas de permisos**: La integración de Notion podría no tener los permisos adecuados.
+4. **Errores en la conexión**: Podría haber problemas en el código que maneja la conexión a Notion.
 
-### 🛠️ Arquitectura implementada
+### 🔄 Próximos pasos recomendados
 
-```
-[Notion DB] ➡️ [API Notion] ➡️ [lib/notion.ts] ➡️ [Adaptador] ➡️ [Componentes React] ➡️ [UI]
-   (almacén)     (transportista)    (procesador)      (traductor)        (tienda)       (cliente)
-```
+1. **Revisar logs de build**:
+   - Examinar detalladamente los logs de construcción en Vercel
+   - Buscar errores relacionados con la copia de archivos estáticos
 
-Es como un sistema de abastecimiento de una tienda real: Notion es el almacén central donde guardamos los productos, la API es el transportista que los trae, el adaptador es quien los organiza en las estanterías, y los componentes son la exposición final para los clientes.
+2. **Verificar configuración de Next.js**:
+   - Revisar `next.config.mjs` para asegurar que las imágenes estáticas se manejan correctamente
+   - Considerar agregar configuración específica para Vercel
 
-### 📚 Cambios técnicos implementados
+3. **Probar con CDN externo**:
+   - Subir las imágenes a un servicio como Cloudinary
+   - Actualizar el código para cargar imágenes desde URL externas
 
-#### 1. Optimización de la capa de conexión con Notion
+4. **Dominio personalizado**:
+   - Configurar un dominio personalizado puede resolver problemas de caché
+   - Permitiría un nuevo despliegue desde cero
 
-- **Refactorización de `lib/notion.ts`** para usar variables de entorno de forma segura:
+5. **Revisar variables de entorno**:
+   - Confirmar que las variables están correctamente configuradas en Vercel
+   - Verificar que no hay espacios o caracteres inválidos
 
-```typescript
-// Antes - Hardcodeado y sin manejo adecuado de errores
-const NOTION_API_KEY = 'ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0';
-const DATABASE_ID = '1f625056207c80c6bd27000c8c49292b';
+6. **Cambios en la estructura del proyecto**:
+   - Considerar mover las imágenes a carpetas diferentes
+   - Simplificar la estructura de rutas
 
-// Después - Uso seguro de variables de entorno y formato correcto
-const getEnvVariable = (name: string, defaultValue: string): string => {
-  // En el servidor, intentamos obtener la variable de entorno
-  if (typeof window === 'undefined') {
-    return process.env[name] || defaultValue;
-  }
-  // En el cliente, usamos el valor por defecto (por seguridad)
-  return defaultValue;
-};
-
-const NOTION_API_KEY = getEnvVariable('NOTION_API_KEY', 'ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0');
-
-// Preparar el ID de la base de datos (eliminar guiones si existen)
-let dbId = getEnvVariable('NOTION_DATABASE_ID', '1f625056207c80c6bd27000c8c49292b');
-```
-
-#### 2. Adaptador para convertir datos de Notion a formato de aplicación
-
-```typescript
-// app/shop/page.tsx - Componente de servidor para cargar datos
-async function getProductsData() {
-  // Obtener datos desde Notion (corre en el servidor)
-  const notionProducts = await getProducts();
-  return adaptNotionProductsToAppProducts(notionProducts);
-}
-```
-
-## 📈 Plan Optimizado - Rápido con SEO Mejorado
-
-### Fase 1: Configuración e Integración Notion (1-2 días)
-1. **Configuración Notion**
-   - Crear archivo `.env.local` con tokens
-   - Implementar funciones básicas de conexión
-   - Adaptar datos de Notion a la estructura de la aplicación
-
-2. **Página Principal y de Producto**
-   - Página principal con listado de productos
-   - Metadata dinámica para SEO
-
-### Fase 2: Categorías y SEO (1-2 días)
-1. **Categorías Dinámicas**
-   - Implementar rutas dinámicas para categorías
-   - Filtrado de productos por categoría
-   - Metadata específica por categoría
-
-2. **SEO**
-   - Implementar sitemap.xml dinámico
-   - Configurar robots.txt
-   - Optimizar OpenGraph tags
-
-### Fase 3: Despliegue y Optimización (1 día)
-1. **Despliegue**
-   - Configuración Vercel/Netlify
-   - Ajuste de variables de entorno
-   - Comprobación de rendimiento
-
-2. **Optimizaciones**
-   - Optimización de imágenes
-   - Implementación de caché
-   - Análisis de Lighthouse
+Si los problemas persisten, podría ser necesario considerar una auditoría completa del proyecto o migrar a un proveedor de hosting diferente como Netlify, Railway o Firebase Hosting.
