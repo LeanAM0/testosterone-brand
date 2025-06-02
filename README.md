@@ -37,66 +37,66 @@ testosterone-brand/
 - **Efectos visuales**: Animaciones y efectos especiales
 - **SEO**: Optimizado para motores de búsqueda
 - **Responsive**: Diseño adaptable para todos los dispositivos
-- **Integración con WhatsApp**: Botón de contacto directo
-- **Rendimiento**: Optimizado para un rendimiento rápido
-
-## 📋 Requisitos Previos
-
-- Node.js 18.x o superior
-- npm 9.x o superior
-- Cuenta de Notion (para la base de datos de productos)
-
-## 🚀 Instalación y Uso
-
-1. **Clona el repositorio**:
-   ```bash
-   git clone https://github.com/tuusuario/testosterone-brand.git
-   cd testosterone-brand
-   ```
-
-2. **Instala las dependencias**:
-   ```bash
-   npm install
-   ```
-
-3. **Configura las variables de entorno**:
-   Crea un archivo `.env.local` con las siguientes variables:
-   ```
-   NOTION_API_KEY=tu_api_key_de_notion
-   NOTION_DATABASE_ID=tu_id_de_base_de_datos
-   ```
-
-4. **Inicia el servidor de desarrollo**:
-   ```bash
-   npm run dev
-   ```
-
-5. **Construye para producción**:
-   ```bash
-   npm run build
-   ```
-
-6. **Inicia en modo producción**:
-   ```bash
-   npm start
-   ```
-
-## 🧪 Testing
-
-```bash
-npm run test
-```
 
 ## 📦 Dependencias Principales
 
-- **next**: Framework React para producción
-- **react**: Biblioteca JavaScript para interfaces de usuario
-- **tailwindcss**: Framework CSS utilitario
-- **framer-motion**: Biblioteca para animaciones en React
-- **@notionhq/client**: Cliente oficial de Notion API
-- **@radix-ui**: Primitivos de componentes headless para React
+- `@radix-ui/react-*`: Componentes UI accesibles
+- `framer-motion`: Animaciones
+- `next-themes`: Gestión de temas
+- `lucide-react`: Iconos
+- `tailwindcss`: Sistema de estilos
+- `date-fns`: Manejo de fechas
 
-## 🔍 Características Avanzadas
+## 🚀 Instalación y Desarrollo
+
+1. Clona el repositorio
+2. Instala las dependencias:
+   ```bash
+   pnpm install
+   ```
+3. Inicia el servidor de desarrollo:
+   ```bash
+   pnpm dev
+   ```
+
+## 📝 Convenciones del Proyecto
+
+- **Archivos de componentes**: `.tsx`
+- **Archivos de estilos**: Tailwind CSS
+- **Manejo de estado**: Context API
+- **Rutas**: Sistema de archivos de Next.js
+- **Componentes UI**: Radix UI
+
+## 📱 Componentes Principales
+
+- `Hero`: Sección principal del sitio
+- `ProductCard`: Tarjetas de productos
+- `Navbar`: Barra de navegación
+- `Footer`: Pie de página
+- `LanguageSwitcher`: Selector de idiomas
+- `ThemeProvider`: Gestión de temas
+- `TestosteroneMolecule`: Componente especializado
+
+## 📚 Contextos Disponibles
+
+- `LanguageContext`: Manejo de idiomas
+- `ThemeContext`: Gestión de temas
+
+## 🎨 Estilos y Animaciones
+
+- Sistema de estilos basado en Tailwind CSS
+- Animaciones con Framer Motion
+- Efectos visuales personalizados
+- Temas claro/oscuro
+
+## 📱 Responsive Design
+
+El sitio está completamente optimizado para:
+- Desktop
+- Tablet
+- Móvil
+
+## 📝 Notas Importantes
 
 - El proyecto utiliza TypeScript para tipado estático
 - Se incluye soporte para WhatsApp
@@ -137,6 +137,83 @@ El ID correcto de la base de datos es: `1f625056207c80c3b951ff146b3c2c51` (sin g
 **Nota**: Sin estas variables configuradas correctamente, la aplicación mostrará productos con información predeterminada y algunos componentes visuales como la molécula de testosterona podrían no funcionar correctamente.
 
 Nunca expongas estas credenciales directamente en el código fuente en un repositorio público.
+
+## 🔍 Soluciones para Problemas de Despliegue
+
+> 🆕 **NUEVA SECCIÓN: Añadida el 01-06-2025**
+
+### Problemas Conocidos
+
+Hemos identificado dos problemas principales en el despliegue en Vercel:
+
+1. **Imagen de molécula de testosterona no se muestra** - La imagen de fondo con la molécula no aparece en el despliegue aunque existe en el repositorio.
+
+2. **Conexión con Notion no funciona** - Los productos no se cargan desde la base de datos de Notion en el despliegue.
+
+### Soluciones Implementadas para Diagnóstico
+
+Para diagnosticar y solucionar estos problemas, hemos implementado las siguientes mejoras:
+
+#### 1. Mejora en Componente TestosteroneMolecule
+
+Hemos añadido logs de depuración al componente de la molécula para entender mejor qué está sucediendo con la carga de la imagen:
+
+```tsx
+// Logs para el ciclo de vida del componente
+useEffect(() => {
+  // Log de montaje del componente
+  console.log("TestosteroneMolecule: Componente montado");
+  console.log("TestosteroneMolecule: Ruta de imagen:", "/images/testosterone-molecule.png");
+}, [])
+
+// Manejadores de eventos para la imagen
+<Image
+  src="/images/testosterone-molecule.png"
+  alt="Testosterone Molecule"
+  onError={(e) => {
+    console.error("Error cargando imagen de molécula:", e);
+  }}
+  onLoad={() => {
+    console.log("Imagen de molécula cargada correctamente");
+  }}
+/>
+```
+
+Es como añadir sensores a un coche para detectar exactamente qué parte está fallando.
+
+#### 2. Endpoint de Diagnóstico de Variables de Entorno
+
+Hemos creado un nuevo endpoint en `/api/test-env` que nos permite verificar si las variables de entorno se están cargando correctamente en Vercel:
+
+```typescript
+// app/api/test-env/route.ts
+export async function GET() {
+  // Mostramos información sobre las variables de entorno
+  const envInfo = {
+    apiKey: process.env.NOTION_API_KEY 
+      ? `${process.env.NOTION_API_KEY.substring(0, 4)}...` 
+      : 'No definido',
+    dbId: process.env.NOTION_DATABASE_ID || 'No definido',
+    // Más información útil para diagnóstico...
+  };
+  
+  return NextResponse.json(envInfo);
+}
+```
+
+Es como crear una ventana de inspección para ver lo que realmente está sucediendo con las variables de entorno.
+
+### Cómo Verificar los Resultados
+
+1. **Para problemas con la imagen**:
+   - Abre la consola del navegador (F12) cuando visites el sitio
+   - Busca mensajes relacionados con "TestosteroneMolecule" o errores de carga de imagen
+   
+2. **Para problemas con Notion**:
+   - Visita `[tu-url-de-vercel]/api/test-env`
+   - Comprueba si las variables de entorno se están mostrando correctamente
+
+> ⚠️ **NOTA**: El endpoint de diagnóstico debe eliminarse después de resolver los problemas, ya que muestra información parcial de las credenciales.
 
 ## 📝 Contribución
 
@@ -201,54 +278,7 @@ const NOTION_API_KEY = getEnvVariable('NOTION_API_KEY', 'ntn_W9937756284trEsdAxq
 let dbId = getEnvVariable('NOTION_DATABASE_ID', '1f625056207c80c6bd27000c8c49292b');
 ```
 
-#### 2. Implementación de mejor manejo de errores
-
-```typescript
-// Antes - Sin manejo adecuado de errores
-const response = await notion.databases.query({ database_id: DATABASE_ID });
-return response.results;
-
-// Después - Con manejo detallado de errores
-try {
-  console.log('Consultando base de datos de Notion:', dbId);
-  const response = await notion.databases.query({ database_id: dbId });
-  console.log(`Respuesta de Notion recibida: ${response.results.length} productos encontrados`);
-  return response.results;
-} catch (error) {
-  console.error('🔴 Error al consultar Notion:', error);
-  // Proporcionar datos por defecto en caso de error
-  return [];
-}
-```
-
-#### 3. Adaptador mejorado para productos
-
-```typescript
-// Creamos un adaptador para transformar datos de Notion a nuestro formato
-export function adaptNotionProductsToAppProducts(
-  notionProducts: NotionProductPage[]
-): Product[] {
-  if (!notionProducts || notionProducts.length === 0) {
-    console.warn('No se encontraron productos en Notion, usando datos por defecto');
-    return DEFAULT_PRODUCTS;
-  }
-
-  return notionProducts.map((notionPage) => {
-    // Extraer propiedades y mapearlas al formato de la aplicación
-    const properties = notionPage.properties;
-    
-    // Mapear cada propiedad con validación
-    return {
-      id: notionPage.id,
-      name: getPropertyValue(properties.Name, 'title', 'Producto sin nombre'),
-      price: Number(getPropertyValue(properties.Price, 'number', 0)),
-      // ... otras propiedades
-    };
-  });
-}
-```
-
-#### 4. Integración en páginas de servidor y cliente
+#### 2. Adaptador para convertir datos de Notion a formato de aplicación
 
 ```typescript
 // app/shop/page.tsx - Componente de servidor para cargar datos
@@ -257,89 +287,38 @@ async function getProductsData() {
   const notionProducts = await getProducts();
   return adaptNotionProductsToAppProducts(notionProducts);
 }
-
-export default async function ShopPage() {
-  const products = await getProductsData();
-  
-  return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-8">Nuestra Tienda</h1>
-      <ProductGrid products={products} />
-    </div>
-  );
-}
 ```
-
-### 🧪 Pruebas realizadas
-
-1. ✅ **Desarrollo local**: La aplicación carga correctamente los productos de Notion
-2. ✅ **Caché de datos**: Los productos se almacenan en caché durante 60 minutos
-3. ✅ **Manejo de errores**: Si Notion no responde, se muestran productos predeterminados
-4. ✅ **Variables de entorno**: Funciona con variables de entorno o valores por defecto
-
-### 🚀 Próximos pasos
-
-1. Implementar filtrado avanzado por categorías
-2. Añadir más detalles de producto (colores, tallas)
-3. Crear página detallada para cada producto
-4. Implementar caché más sofisticado para mayor rendimiento
 
 ## 📈 Plan Optimizado - Rápido con SEO Mejorado
 
 ### Fase 1: Configuración e Integración Notion (1-2 días)
 1. **Configuración Notion**
    - Crear archivo `.env.local` con tokens
-   - Probar conexión con `test-notion-integration.js`
+   - Implementar funciones básicas de conexión
+   - Adaptar datos de Notion a la estructura de la aplicación
 
-2. **API Básica Notion**
-   - Implementar `getProducts()` y `getProductsByCategory()`
-   - Mapear datos de Notion a estructura útil para la aplicación
+2. **Página Principal y de Producto**
+   - Página principal con listado de productos
+   - Metadata dinámica para SEO
 
-### Fase 2: Página Principal con SEO (1 día)
-1. **Página Principal con SEO**
-   - Implementar metadata para SEO
-   - Mostrar productos desde Notion
+### Fase 2: Categorías y SEO (1-2 días)
+1. **Categorías Dinámicas**
+   - Implementar rutas dinámicas para categorías
+   - Filtrado de productos por categoría
+   - Metadata específica por categoría
+
+2. **SEO**
+   - Implementar sitemap.xml dinámico
+   - Configurar robots.txt
    - Optimizar OpenGraph tags
 
-2. **Actualizar ProductCard**
-   - Adaptarlo para usar datos de Notion
-   - Mostrar imágenes, categorías y colores disponibles
+### Fase 3: Despliegue y Optimización (1 día)
+1. **Despliegue**
+   - Configuración Vercel/Netlify
+   - Ajuste de variables de entorno
+   - Comprobación de rendimiento
 
-### Fase 3: Páginas de Categoría con SEO (1 día)
-1. **Páginas de Categoría**
-   - Crear rutas dinámicas por categoría
-   - Implementar SEO específico por categoría
-   - Generar parámetros estáticos para mejor rendimiento
-
-### Fase 4: Despliegue y GitHub (1 día)
-1. **GitHub**
-   - Configuración de repositorio y .gitignore
-
-2. **Vercel**
-   - Conexión con GitHub
-   - Configuración de variables de entorno
-
-### Fase 5: Optimizaciones Importantes (1 día, opcional)
-1. **Caché Básico**
-   - Revalidación cada 60 minutos
-   - Configuración de dominios de imágenes
-
-2. **SEO Adicional**
-   - Sitemap dinámico
-   - Robots.txt
-   - OpenGraph mejorado
-
-### Características Priorizadas
-- ✅ Integración rápida con Notion
-- ✅ SEO mejorado en todas las páginas
-- ✅ Páginas de categoría dinámicas
-- ✅ Metadata dinámica
-- ✅ Sitemap para indexación
-
-### Para implementaciones futuras (menos prioritarias)
-- ⏳ Lazy loading de imágenes
-- ⏳ Skeleton loading
-- ⏳ Filtros avanzados
-- ⏳ Paginación
-
-Este plan permite tener un sitio funcional en 3-4 días con buen SEO, manteniendo la simplicidad y estableciendo una base sólida para mejoras futuras.
+2. **Optimizaciones**
+   - Optimización de imágenes
+   - Implementación de caché
+   - Análisis de Lighthouse
