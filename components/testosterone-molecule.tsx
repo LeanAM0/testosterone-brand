@@ -15,8 +15,12 @@ export default function TestosteroneMolecule({ className = "" }) {
   const x = useSpring(mouseX, springConfig)
   const y = useSpring(mouseY, springConfig)
 
+  // Efecto para establecer que estamos en el navegador
   useEffect(() => {
     setIsBrowser(true)
+    // Log para depuración
+    console.log("TestosteroneMolecule: Componente montado");
+    console.log("TestosteroneMolecule: Ruta de imagen:", "/images/testosterone-molecule-full.png");
   }, [])
 
   useEffect(() => {
@@ -77,6 +81,13 @@ export default function TestosteroneMolecule({ className = "" }) {
           height={500}
           className="w-full h-auto"
           priority
+          onError={(e) => {
+            console.error("Error cargando imagen de molécula:", e);
+            // Mostrar un mensaje en la consola del navegador para diagnóstico
+          }}
+          onLoad={() => {
+            console.log("Imagen de molécula cargada correctamente");
+          }}
         />
       </motion.div>
     </div>
