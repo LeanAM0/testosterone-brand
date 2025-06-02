@@ -20,7 +20,7 @@ export default function TestosteroneMolecule({ className = "" }) {
     setIsBrowser(true)
     // Log para depuración
     console.log("TestosteroneMolecule: Componente montado");
-    console.log("TestosteroneMolecule: Ruta de imagen:", "/images/testosterone-molecule-full.png");
+    console.log("TestosteroneMolecule: Ruta de imagen:", "/images/testosterone-molecule.png");
   }, [])
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function TestosteroneMolecule({ className = "" }) {
         }}
       >
         <Image
-          src="/images/testosterone-molecule-full.png"
+          src="/images/testosterone-molecule.png"
           alt="Testosterone Molecule"
           width={500}
           height={500}
