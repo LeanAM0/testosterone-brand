@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "clean": "rimraf node_modules .next",
-    "vercel-build": "npm run clean-install && next build",
-    "clean-install": "npm install --legacy-peer-deps --no-package-lock"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
