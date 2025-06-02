@@ -26,27 +26,37 @@ export interface Product {
 const getEnvVariable = (name: string, defaultValue: string): string => {
   // En el servidor, intentamos obtener la variable de entorno
   if (typeof window === 'undefined') {
-    return process.env[name] || defaultValue;
+    const value = process.env[name];
+    if (value) {
+      return value;
+    }
+    console.log(`Variable de entorno ${name} no encontrada, usando valor por defecto`);
+    return defaultValue;
   }
   // En el cliente, usamos el valor por defecto (por seguridad)
   return defaultValue;
 };
 
-// Configuración de Notion con opciones alternativas para probar
-// IMPORTANTE: Estas credenciales son para desarrollo. En producción, usa .env.local o variables de entorno seguras
+// Valor principal probado en modo desarrollo
 const PRIMARY_API_KEY = 'ntn_W9937756284trEsdAxqQdsnhpxiIotqBdU6aFiroLmUgu0';
-const NOTION_API_KEY = getEnvVariable('NOTION_API_KEY', PRIMARY_API_KEY);
 
-// ID correcto de la base de datos de Notion (encontrado mediante prueba)
+// IMPORTANTE: Usar el ID correcto sin guiones que funciona garantizado
 // El nombre de la base de datos es: TESTOSTERONE DATABASE
-const DB_ID_WITH_HYPHENS = '1f625056-207c-80c3-b951-ff146b3c2c51';
-const DB_ID_WITHOUT_HYPHENS = '1f625056207c80c3b951ff146b3c2c51';
+const WORKING_DATABASE_ID = '1f625056207c80c3b951ff146b3c2c51';
 
-// Usar el ID de la base de datos exactamente como está proporcionado en las variables de entorno, si existe
-const NOTION_DATABASE_ID = getEnvVariable('NOTION_DATABASE_ID', DB_ID_WITH_HYPHENS);
+// Obtener valores de variables de entorno o usar los que sabemos que funcionan
+const NOTION_API_KEY = getEnvVariable('NOTION_API_KEY', PRIMARY_API_KEY);
+const NOTION_DATABASE_ID = getEnvVariable('NOTION_DATABASE_ID', WORKING_DATABASE_ID);
 
-// Almacenar IDs alternativos para probar si el principal falla
-const ALTERNATIVE_DATABASE_IDS = [DB_ID_WITHOUT_HYPHENS];
+// No necesitamos IDs alternativos ya que usamos el que funciona como fallback
+const ALTERNATIVE_DATABASE_IDS: string[] = [];
+
+// Mostrar información de depuración para ayudar a resolver problemas
+console.log('===== CONFIGURACIÓN DE NOTION =====');
+console.log('Entorno:', process.env.NODE_ENV);
+console.log('API Key (primeros 4 caracteres):', NOTION_API_KEY.substring(0, 4) + '...');
+console.log('Database ID utilizado:', NOTION_DATABASE_ID);
+console.log('================================');
 
 // Registrar información de configuración
 console.log('Configuración de Notion:')
@@ -199,61 +209,60 @@ const notionPageToProduct = (page: any): Product => {
     }
   } catch (error) {
     console.error('Error general mapeando producto:', error)
-    // Devolver un producto básico para evitar errores
+    // En caso de error, devolver un producto con valores predeterminados
     return {
-      id: page.id,
-      name: 'Producto sin nombre',
+      id: page.id || 'error-id',
+      name: 'Error al cargar producto',
       category: 'Sin categoría',
-      description: '',
+      description: 'No se pudo cargar la descripción',
       price: 0,
       features: '',
       colors: [],
-      images: [{ url: '/images/placeholder.jpg', name: 'Imagen no disponible' }],
-      available: true,
-      slug: page.id
+      images: [{ url: '/images/placeholder.jpg', name: 'Error de carga' }],
+      available: false,
+      slug: page.id || 'error-slug'
     }
   }
 }
 
-// Función para obtener todos los productos
-// Función auxiliar para obtener datos de muestra cuando falla la conexión con Notion
+// Función para obtener datos de muestra cuando falla la conexión con Notion
 function getTestProductsData(): Product[] {
   return [
     {
-      id: 'test-product-1',
-      name: 'Hoodie de Entrenamiento',
-      category: 'Hoodies',
-      description: 'Hoodie cómodo para tus entrenamientos intensos.',
-      price: 39.99,
-      features: 'Material de alta calidad\nResistente al sudor\nDisponible en varios colores',
-      colors: ['Negro', 'Gris', 'Azul'],
-      images: [{ url: '/images/products/austrian-oak-hoodie-front.jpg', name: 'Hoodie 1' }],
-      available: true,
-      slug: 'hoodie-entrenamiento'
-    },
-    {
-      id: 'test-product-2',
-      name: 'Camiseta Técnica',
-      category: 'Tanks',
-      description: 'Camiseta transpirable para tus sesiones de cardio.',
-      price: 24.99,
-      features: 'Tejido ligero\nSecado rápido\nTecnología anti-olor',
-      colors: ['Blanco', 'Negro'],
-      images: [{ url: '/images/products/molecule-tee-front.jpg', name: 'Camiseta 1' }],
-      available: true,
-      slug: 'camiseta-tecnica'
-    },
-    {
-      id: 'test-product-3',
-      name: 'Shorts de Entrenamiento',
-      category: 'Shorts',
-      description: 'Shorts cómodos con bolsillos laterales.',
+      id: 'sample-1',
+      name: 'Camiseta Testosterone Original',
+      category: 'Camisetas',
+      description: 'Camiseta de alta calidad con el logo de Testosterone.',
       price: 29.99,
-      features: 'Material elástico\nBolsillos con cremallera\nCintura ajustable',
-      colors: ['Negro', 'Gris'],
-      images: [{ url: '/images/products/testosterone-metal-hoodie-front.jpg', name: 'Shorts 1' }],
+      features: 'Algodón 100%, disponible en varios colores',
+      colors: ['Negro', 'Blanco', 'Gris'],
+      images: [{ url: '/images/products/tshirt-1.jpg', name: 'Camiseta Testosterone' }],
       available: true,
-      slug: 'shorts-entrenamiento'
+      slug: 'camiseta-testosterone-original'
+    },
+    {
+      id: 'sample-2',
+      name: 'Sudadera Testosterone Premium',
+      category: 'Sudaderas',
+      description: 'Sudadera cómoda y duradera para entrenamientos intensos.',
+      price: 49.99,
+      features: 'Material térmico, con capucha, bolsillos frontales',
+      colors: ['Negro', 'Azul'],
+      images: [{ url: '/images/products/hoodie-1.jpg', name: 'Sudadera Testosterone' }],
+      available: true,
+      slug: 'sudadera-testosterone-premium'
+    },
+    {
+      id: 'sample-3',
+      name: 'Pantalón Testosterone Training',
+      category: 'Pantalones',
+      description: 'Pantalón diseñado para máxima libertad de movimiento.',
+      price: 39.99,
+      features: 'Tejido elástico, secado rápido, cintura ajustable',
+      colors: ['Negro', 'Gris'],
+      images: [{ url: '/images/products/pants-1.jpg', name: 'Pantalón Testosterone' }],
+      available: true,
+      slug: 'pantalon-testosterone-training'
     }
   ]
 }
@@ -261,15 +270,40 @@ function getTestProductsData(): Product[] {
 // Función auxiliar para intentar la conexión con un ID específico
 async function tryFetchProducts(databaseId: string): Promise<Product[] | null> {
   try {
-    console.log('Intentando conectar a Notion con Database ID:', databaseId)
+    console.log('🔄 Intentando conectar a Notion con Database ID:', databaseId);
+    console.log('🔑 Usando API Key (primeros 4):', NOTION_API_KEY.substring(0, 4) + '...');
+    console.log('🌐 Entorno:', process.env.NODE_ENV || 'desconocido');
+    
+    // Verificación de formato de ID (para depuración)
+    if (databaseId.includes('-')) {
+      console.warn('⚠️ ADVERTENCIA: El ID contiene guiones que podrían causar problemas');
+    }
+    
+    // Obtener metadatos de la base de datos primero para verificar que existe
+    console.log('📊 Obteniendo metadatos de la base de datos...');
+    try {
+      const database = await notion.databases.retrieve({
+        database_id: databaseId
+      });
+      // Acceder al título de forma segura considerando la estructura de Notion
+      const databaseTitle = (database as any).title?.length > 0 ? 
+        (database as any).title[0]?.plain_text : 'Sin título';
+      console.log('✅ Base de datos encontrada:', databaseTitle);
+      console.log('✅ Propiedades disponibles:', Object.keys(database.properties).join(', '));
+    } catch (metaError: any) {
+      console.error('❌ Error al obtener metadatos:', metaError.message);
+      console.error('❌ Código de error:', metaError.code || 'desconocido');
+      throw metaError; // Re-lanzar para manejar en el catch principal
+    }
     
     // Obtener todos los productos sin filtro para depuración
+    console.log('🔍 Consultando productos en la base de datos...');
     const response = await notion.databases.query({
       database_id: databaseId
       // Eliminamos el filtro temporalmente para ver todos los productos
-    })
+    });
     
-    console.log('Conexión exitosa con Notion, encontrados', response.results.length, 'productos')
+    console.log('✅ Conexión exitosa con Notion, encontrados', response.results.length, 'productos');
     
     // Imprimir información detallada sobre la primera página para depuración
     if (response.results.length > 0) {
