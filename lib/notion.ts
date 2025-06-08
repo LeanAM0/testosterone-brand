@@ -26,10 +26,13 @@ export interface Product {
 const getEnvVariable = (name: string, defaultValue: string): string => {
   // En el servidor, intentamos obtener la variable de entorno
   if (typeof window === 'undefined') {
+    // Intentar obtener primero de process.env
     const value = process.env[name];
     if (value) {
       return value;
     }
+    
+    // Si no hay valor, usar el valor por defecto
     console.log(`Variable de entorno ${name} no encontrada, usando valor por defecto`);
     return defaultValue;
   }
@@ -51,30 +54,39 @@ const NOTION_DATABASE_ID = getEnvVariable('NOTION_DATABASE_ID', WORKING_DATABASE
 // No necesitamos IDs alternativos ya que usamos el que funciona como fallback
 const ALTERNATIVE_DATABASE_IDS: string[] = [];
 
-// Mostrar información de depuración para ayudar a resolver problemas
-console.log('===== CONFIGURACIÓN DE NOTION =====');
-console.log('Entorno:', process.env.NODE_ENV);
-console.log('API Key (primeros 4 caracteres):', NOTION_API_KEY.substring(0, 4) + '...');
-console.log('Database ID utilizado:', NOTION_DATABASE_ID);
-console.log('================================');
-
-// Registrar información de configuración
-console.log('Configuración de Notion:')
-console.log('- API Key (primeros 4 caracteres):', NOTION_API_KEY.substring(0, 4) + '...');
-console.log('- Database ID principal:', NOTION_DATABASE_ID);
-console.log('- Database IDs alternativos disponibles:', ALTERNATIVE_DATABASE_IDS.length);
-
-// Inicializar cliente Notion
-const notion = new Client({
-  auth: NOTION_API_KEY
-})
+// Inicializar cliente Notion - Manejar con try/catch para mayor robustez
+let notion: Client;
+try {
+  notion = new Client({
+    auth: NOTION_API_KEY
+  });
+  console.log('Cliente Notion inicializado correctamente');
+} catch (error) {
+  console.error('Error al inicializar cliente Notion:', error);
+  // Crear un cliente fallback que devolverá datos de prueba
+  notion = {} as Client;
+}
 
 // Función auxiliar para convertir una página de Notion a un objeto Product
 const notionPageToProduct = (page: any): Product => {
-  const props = page.properties
+  // En caso de recibir un valor nulo o indefinido, devolver un producto vacío
+  if (!page || !page.properties) {
+    console.error('Página de Notion inválida o sin propiedades');
+    return {
+      id: 'invalid-page',
+      name: 'Producto no disponible',
+      category: 'Sin categoría',
+      description: 'No hay descripción disponible',
+      price: 0,
+      features: '',
+      colors: [],
+      images: [],
+      available: false,
+      slug: 'invalid-product'
+    };
+  }
   
-  // Registrar las propiedades del producto para depuración
-  console.log(`Mapeando producto ID: ${page.id}`)
+  const props = page.properties
   
   // Función auxiliar para acceder a propiedades de forma segura
   const getPropertySafely = (propName: string, defaultValue: any) => {
@@ -104,7 +116,6 @@ const notionPageToProduct = (page: any): Product => {
   };
   
   // Verificar nombres de propiedades alternativos con tolerancia a espacios
-  // Notion puede tener nombres con mayúsculas/minúsculas diferentes, acentos o espacios adicionales
   const nameProperty = findProperty(['Nombre', 'nombre', 'Name', 'name']);
   const categoryProperty = findProperty(['Categoria', 'categoria', 'Category', 'category']);
   const descProperty = findProperty(['Descripción', 'descripcion', 'Description', 'description']);
@@ -115,322 +126,246 @@ const notionPageToProduct = (page: any): Product => {
   const availableProperty = findProperty(['Disponibilidad', 'disponibilidad', 'Available', 'available']);
   const slugProperty = findProperty(['Slug', 'slug']);
   
-  // Verificar si hay propiedades faltantes críticas
-  if (!nameProperty) {
-    console.error('Propiedad de nombre no encontrada. Propiedades disponibles:', Object.keys(props))
-  }
+  // Inicializar valores por defecto
+  let name = '';
+  let category = '';
+  let description = '';
+  let price = 0;
+  let features = '';
+  let colors: string[] = [];
+  let images: { url: string; name: string }[] = [];
+  let available = false;
+  let slug = '';
   
   try {
-    // Intentar acceder al nombre con manejo de errores detallado
-    let name = ''
+    // Extraer nombre con manejo de errores
     try {
-      name = nameProperty?.title?.[0]?.plain_text || ''
+      name = nameProperty?.title?.[0]?.plain_text || '';
       if (!name) {
-        console.warn('Título vacío para el producto:', page.id)
+        name = 'Producto sin nombre';
       }
     } catch (error) {
-      console.error('Error al acceder al título:', error)
+      name = 'Error al extraer nombre';
     }
     
-    // Obtener categoría con múltiples alternativas
-    let category = ''
+    // Extraer categoría con manejo de errores
     try {
       if (categoryProperty?.select?.name) {
-        category = categoryProperty.select.name
+        category = categoryProperty.select.name;
       } else if (categoryProperty?.multi_select?.[0]?.name) {
-        category = categoryProperty.multi_select[0].name
+        category = categoryProperty.multi_select[0].name;
+      } else {
+        category = 'Sin categoría';
       }
     } catch (error) {
-      console.error('Error al acceder a la categoría:', error)
+      category = 'Error en categoría';
     }
     
-    // Imágenes con manejo de errores mejorado
-    let images: { url: string; name: string }[] = []
+    // Extraer descripción con manejo de errores
     try {
-      // Imprimir para depuración qué tipo de datos tenemos para las imágenes
-      console.log(`Procesando imágenes para producto ID: ${page.id}, nombre: ${name}`)
-      if (imagesProperty) {
-        console.log('Estructura del campo de imágenes:', JSON.stringify(imagesProperty, null, 2))
+      if (descProperty?.rich_text?.[0]?.plain_text) {
+        description = descProperty.rich_text[0].plain_text;
       } else {
-        console.warn('No se encontró el campo de imágenes para este producto')
+        description = 'Sin descripción';
       }
-      
-      // Procesar imágenes solo si tenemos el campo files
+    } catch (error) {
+      description = 'Error en descripción';
+    }
+    
+    // Extraer precio con manejo de errores
+    try {
+      if (typeof priceProperty?.number === 'number') {
+        price = priceProperty.number;
+      } else {
+        price = 0;
+      }
+    } catch (error) {
+      price = 0;
+    }
+    
+    // Extraer características con manejo de errores
+    try {
+      if (featuresProperty?.rich_text?.[0]?.plain_text) {
+        features = featuresProperty.rich_text[0].plain_text;
+      } else {
+        features = '';
+      }
+    } catch (error) {
+      features = '';
+    }
+    
+    // Extraer colores con manejo de errores
+    try {
+      if (colorProperty?.multi_select && Array.isArray(colorProperty.multi_select)) {
+        colors = colorProperty.multi_select.map((color: any) => color.name || '');
+      } else {
+        colors = [];
+      }
+    } catch (error) {
+      colors = [];
+    }
+    
+    // Extraer imágenes con manejo de errores
+    try {
       if (imagesProperty?.files && Array.isArray(imagesProperty.files)) {
-        console.log(`Encontradas ${imagesProperty.files.length} imágenes potenciales`)
-        
         images = imagesProperty.files.map((file: any, index: number) => {
           try {
-            // Verificar el tipo de imagen (externa o cargada a Notion)
-            console.log(`Imagen #${index + 1}:`, 
-              file.type === 'external' ? `Externa: ${file.external?.url || 'URL no disponible'}` : 
-              file.type === 'file' ? `Archivo: ${file.file?.url || 'URL no disponible'}` : 
-              `Tipo desconocido: ${file.type}`)
-            
-            // Determinar la URL correcta según el tipo
             const url = file.type === 'external' ? file.external?.url : 
-                        file.type === 'file' ? file.file?.url : '';
-                        
-            if (!url) {
-              console.warn(`Imagen #${index + 1} no tiene URL válida, tipo: ${file.type}`)
-            }
-            
+                      file.type === 'file' ? file.file?.url : '';
             return {
               url: url || '',
               name: file.name || `imagen-${index + 1}`
-            }
+            };
           } catch (fileError) {
-            console.error(`Error procesando archivo de imagen #${index + 1}:`, fileError)
-            return { url: '', name: `error-image-${index + 1}` }
+            return { url: '', name: `error-image-${index + 1}` };
           }
-        }).filter((img: { url: string }) => img.url) // Filtrar imágenes sin URL
-        
-        console.log(`Imágenes válidas después de filtrar: ${images.length}`)
-        if (images.length > 0) {
-          console.log('Primera imagen URL:', images[0].url)
-        }
+        }).filter((img: { url: string }) => img.url);
       }
-    } catch (imagesError) {
-      console.error('Error procesando imágenes:', imagesError)
+    } catch (error) {
+      images = [];
     }
     
-    // Construir el producto con manejo de errores para cada propiedad
-    return {
-      id: page.id,
-      name: name,
-      category: category,
-      description: descProperty?.rich_text?.[0]?.plain_text || '',
-      price: priceProperty?.number || 0,
-      features: featuresProperty?.rich_text?.[0]?.plain_text || '',
-      colors: colorProperty?.multi_select?.map((c: { name: string }) => c.name) || [],
-      images: images.length > 0 ? images : [{ url: '/images/placeholder.jpg', name: 'Imagen no disponible' }],
-      available: availableProperty?.checkbox ?? true, // Por defecto disponible si no se especifica
-      slug: slugProperty?.rich_text?.[0]?.plain_text || page.id
+    // Extraer disponibilidad con manejo de errores
+    try {
+      available = availableProperty?.checkbox === true;
+    } catch (error) {
+      available = false;
     }
-  } catch (error) {
-    console.error('Error general mapeando producto:', error)
-    // En caso de error, devolver un producto con valores predeterminados
-    return {
-      id: page.id || 'error-id',
-      name: 'Error al cargar producto',
-      category: 'Sin categoría',
-      description: 'No se pudo cargar la descripción',
-      price: 0,
-      features: '',
-      colors: [],
-      images: [{ url: '/images/placeholder.jpg', name: 'Error de carga' }],
-      available: false,
-      slug: page.id || 'error-slug'
+    
+    // Extraer slug con manejo de errores
+    try {
+      if (slugProperty?.rich_text?.[0]?.plain_text) {
+        slug = slugProperty.rich_text[0].plain_text;
+      } else {
+        slug = page.id || '';
+      }
+    } catch (error) {
+      slug = page.id || '';
     }
+    
+  } catch (generalError) {
+    console.error('Error general procesando producto:', generalError);
   }
-}
+  
+  // Construir y devolver el objeto producto con valores sanitizados
+  return {
+    id: page.id || 'unknown-id',
+    name,
+    category,
+    description,
+    price,
+    features,
+    colors,
+    images,
+    available,
+    slug: slug || page.id || 'unknown-slug',
+  };
+};
 
-// Función para obtener datos de muestra cuando falla la conexión con Notion
-function getTestProductsData(): Product[] {
+// Productos de prueba para usar como fallback
+const getTestProductsData = (): Product[] => {
   return [
     {
-      id: 'sample-1',
-      name: 'Camiseta Testosterone Original',
+      id: 'test-product-1',
+      name: 'Camiseta Demo',
       category: 'Camisetas',
-      description: 'Camiseta de alta calidad con el logo de Testosterone.',
+      description: 'Una camiseta de demostración para mostrar cuando la API falla.',
       price: 29.99,
-      features: 'Algodón 100%, disponible en varios colores',
-      colors: ['Negro', 'Blanco', 'Gris'],
-      images: [{ url: '/images/products/tshirt-1.jpg', name: 'Camiseta Testosterone' }],
+      features: 'Material de alta calidad\nDiseño exclusivo\nDiferentes tallas disponibles',
+      colors: ['Negro', 'Blanco', 'Rojo'],
+      images: [{ 
+        url: 'https://images.unsplash.com/photo-1566584346306-7e079de92a9d?q=80&w=1000',
+        name: 'camiseta-demo' 
+      }],
       available: true,
-      slug: 'camiseta-testosterone-original'
+      slug: 'camiseta-demo'
     },
     {
-      id: 'sample-2',
-      name: 'Sudadera Testosterone Premium',
-      category: 'Sudaderas',
-      description: 'Sudadera cómoda y duradera para entrenamientos intensos.',
-      price: 49.99,
-      features: 'Material térmico, con capucha, bolsillos frontales',
-      colors: ['Negro', 'Azul'],
-      images: [{ url: '/images/products/hoodie-1.jpg', name: 'Sudadera Testosterone' }],
-      available: true,
-      slug: 'sudadera-testosterone-premium'
-    },
-    {
-      id: 'sample-3',
-      name: 'Pantalón Testosterone Training',
+      id: 'test-product-2',
+      name: 'Pantalón Demo',
       category: 'Pantalones',
-      description: 'Pantalón diseñado para máxima libertad de movimiento.',
-      price: 39.99,
-      features: 'Tejido elástico, secado rápido, cintura ajustable',
-      colors: ['Negro', 'Gris'],
-      images: [{ url: '/images/products/pants-1.jpg', name: 'Pantalón Testosterone' }],
+      description: 'Un pantalón de demostración.',
+      price: 49.99,
+      features: 'Material elástico\nMúltiples bolsillos\nLigero y duradero',
+      colors: ['Azul', 'Negro'],
+      images: [{ 
+        url: 'https://images.unsplash.com/photo-1593386850972-222459d4130c?q=80&w=987',
+        name: 'pantalon-demo' 
+      }],
       available: true,
-      slug: 'pantalon-testosterone-training'
+      slug: 'pantalon-demo'
     }
-  ]
-}
+  ];
+};
 
 // Función auxiliar para intentar la conexión con un ID específico
 async function tryFetchProducts(databaseId: string): Promise<Product[] | null> {
   try {
-    console.log('🔄 Intentando conectar a Notion con Database ID:', databaseId);
-    console.log('🔑 Usando API Key (primeros 4):', NOTION_API_KEY.substring(0, 4) + '...');
-    console.log('🌐 Entorno:', process.env.NODE_ENV || 'desconocido');
+    console.log(`Intentando obtener productos con Database ID: ${databaseId}`);
     
-    // Verificación de formato de ID (para depuración)
-    if (databaseId.includes('-')) {
-      console.warn('⚠️ ADVERTENCIA: El ID contiene guiones que podrían causar problemas');
+    // Si notion no está inicializado correctamente, devolver null
+    if (!notion.databases) {
+      console.error('Cliente Notion no inicializado correctamente');
+      return null;
     }
     
-    // Obtener metadatos de la base de datos primero para verificar que existe
-    console.log('📊 Obteniendo metadatos de la base de datos...');
-    try {
-      const database = await notion.databases.retrieve({
-        database_id: databaseId
-      });
-      // Acceder al título de forma segura considerando la estructura de Notion
-      const databaseTitle = (database as any).title?.length > 0 ? 
-        (database as any).title[0]?.plain_text : 'Sin título';
-      console.log('✅ Base de datos encontrada:', databaseTitle);
-      console.log('✅ Propiedades disponibles:', Object.keys(database.properties).join(', '));
-    } catch (metaError: any) {
-      console.error('❌ Error al obtener metadatos:', metaError.message);
-      console.error('❌ Código de error:', metaError.code || 'desconocido');
-      throw metaError; // Re-lanzar para manejar en el catch principal
-    }
-    
-    // Obtener todos los productos sin filtro para depuración
-    console.log('🔍 Consultando productos en la base de datos...');
+    // Obtener todas las páginas de la base de datos
     const response = await notion.databases.query({
-      database_id: databaseId
-      // Eliminamos el filtro temporalmente para ver todos los productos
+      database_id: databaseId,
+      filter: {
+        property: 'Disponibilidad',
+        checkbox: {
+          equals: true
+        }
+      },
+      sorts: [
+        {
+          property: 'Nombre',
+          direction: 'ascending'
+        }
+      ]
     });
     
-    console.log('✅ Conexión exitosa con Notion, encontrados', response.results.length, 'productos');
+    console.log(`Éxito! Se encontraron ${response.results.length} productos`);
     
-    // Imprimir información detallada sobre la primera página para depuración
-    if (response.results.length > 0) {
-      const samplePage = response.results[0] as any // Usar any temporalmente para acceder a las propiedades
-      console.log('=== MUESTRA DE DATOS DE NOTION ===')
-      console.log('ID:', samplePage.id)
-      
-      // Verificar si la página tiene propiedades antes de intentar acceder a ellas
-      if (samplePage.properties) {
-        console.log('Propiedades disponibles:', Object.keys(samplePage.properties))
-        
-        // Acceder a la primera propiedad si existe
-        const propertyKeys = Object.keys(samplePage.properties)
-        if (propertyKeys.length > 0) {
-          const firstPropertyKey = propertyKeys[0]
-          console.log('Muestra de la primera propiedad:', 
-            firstPropertyKey, 
-            JSON.stringify(samplePage.properties[firstPropertyKey], null, 2))
-        }
-      } else {
-        console.log('La página no tiene propiedades o está en un formato inesperado')
-      }
-    }
-    
-    // Mapear todos los productos y filtrar los inválidos
-    const products = response.results.map(page => {
-      try {
-        return notionPageToProduct(page)
-      } catch (error) {
-        console.error('Error al mapear producto de Notion:', error, 'Page ID:', page.id)
-        return null
-      }
-    }).filter(Boolean) as Product[]
-    
-    console.log('Productos mapeados correctamente:', products.length)
-    return products
-  } catch (error: any) {
-    console.error(`Error fetching products from Notion with database ID ${databaseId}:`, error.message)
-    return null
+    // Convertir las páginas a productos
+    return response.results.map(notionPageToProduct);
+  } catch (error) {
+    console.error(`Error al obtener productos con Database ID ${databaseId}:`, error);
+    return null;
   }
 }
 
+// Función principal para obtener productos con manejo de errores mejorado
 export const getProducts = cache(async (): Promise<Product[]> => {
-  // 1. Intentar primero con el ID principal
-  const primaryResult = await tryFetchProducts(NOTION_DATABASE_ID)
-  if (primaryResult) {
-    return primaryResult
-  }
+  console.log('Iniciando obtención de productos desde Notion...');
   
-  console.log('ID principal falló, intentando con IDs alternativos...')
-  
-  // 2. Si falla, intentar con los IDs alternativos
-  for (const alternativeId of ALTERNATIVE_DATABASE_IDS) {
-    const alternativeResult = await tryFetchProducts(alternativeId)
-    if (alternativeResult) {
-      console.log('Conexión exitosa con ID alternativo:', alternativeId)
-      return alternativeResult
-    }
-  }
-  
-  // 3. Si todos los intentos fallan, devolver datos de prueba
-  console.log('Todos los intentos de conexión a Notion fallaron, devolviendo datos de prueba')
-  return getTestProductsData()
-})
-
-// Función para obtener productos por categoría
-export const getProductsByCategory = cache(async (category: string): Promise<Product[]> => {
   try {
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
-      filter: {
-        and: [
-          {
-            property: 'Categoria',
-            select: {
-              equals: category
-            }
-          },
-          {
-            property: 'Disponibilidad',
-            checkbox: {
-              equals: true
-            }
-          }
-        ]
-      }
-    })
-    
-    return response.results.map(notionPageToProduct)
-  } catch (error) {
-    console.error(`Error fetching products for category ${category}:`, error)
-    return []
-  }
-})
-
-// Función para obtener un producto por slug
-export const getProductBySlug = cache(async (slug: string): Promise<Product | null> => {
-  try {
-    const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
-      filter: {
-        property: 'Slug',
-        rich_text: {
-          equals: slug
-        }
-      }
-    })
-    
-    if (response.results.length === 0) {
-      // Intentar buscar por ID si no se encuentra por slug
-      return getProductById(slug)
+    // 1. Intentar primero con el ID principal
+    const primaryResult = await tryFetchProducts(NOTION_DATABASE_ID);
+    if (primaryResult) {
+      console.log('Productos obtenidos exitosamente del ID principal');
+      return primaryResult;
     }
     
-    return notionPageToProduct(response.results[0])
+    // 2. Si falla, intentar con IDs alternativos
+    console.log('Fallo al obtener productos del ID principal, probando alternativas...');
+    for (const alternativeId of ALTERNATIVE_DATABASE_IDS) {
+      const alternativeResult = await tryFetchProducts(alternativeId);
+      if (alternativeResult) {
+        console.log(`Productos obtenidos exitosamente del ID alternativo: ${alternativeId}`);
+        return alternativeResult;
+      }
+    }
+    
+    // 3. Si todos fallan, usar datos de prueba pero avisar en la consola
+    console.warn('Todos los intentos de conexión a Notion fallaron, usando datos de prueba');
+    return getTestProductsData();
+    
   } catch (error) {
-    console.error(`Error fetching product with slug ${slug}:`, error)
-    return null
+    // Capturar cualquier error no controlado y devolver datos de prueba
+    console.error('Error general al obtener productos:', error);
+    console.log('Retornando datos de prueba debido a error');
+    return getTestProductsData();
   }
-})
-
-// Función para obtener un producto por ID
-export const getProductById = cache(async (id: string): Promise<Product | null> => {
-  try {
-    const page = await notion.pages.retrieve({ page_id: id })
-    return notionPageToProduct(page)
-  } catch (error) {
-    console.error(`Error fetching product with ID ${id}:`, error)
-    return null
-  }
-})
+});
