@@ -1,63 +1,83 @@
-"use client"
+import { getProducts } from "@/lib/notion"
+import { adaptNotionProductsToAppProducts } from "@/lib/product-adapter"
+import ShopClient from "@/components/shop-client"
 
-import { useState } from "react"
-import ProductCard from "@/components/product-card"
-import { products } from "@/lib/data"
-import { useTranslation } from "@/context/language-context"
+/**
+ * Esta función carga los productos de Notion para renderizado del lado del servidor
+ * Con mejor manejo de errores para entornos de producción
+ */
+async function getProductsData() {
+  try {
+    console.log('Iniciando carga de productos para la página de tienda...');
+    
+    // Obtenemos los productos de Notion con manejo de errores
+    const notionProducts = await getProducts();
+    
+    // Verificar si tenemos productos válidos
+    if (!notionProducts || !Array.isArray(notionProducts)) {
+      console.error('La función getProducts no devolvió un array válido');
+      return []; // Devolver array vacío para evitar errores
+    }
+    
+    console.log(`Se obtuvieron ${notionProducts.length} productos de Notion`);
+    
+    // Los convertimos al formato que espera nuestra aplicación
+    const adaptedProducts = adaptNotionProductsToAppProducts(notionProducts);
+    
+    console.log(`Se adaptaron ${adaptedProducts.length} productos correctamente`);
+    return adaptedProducts;
+  } catch (error) {
+    console.error("Error al cargar productos de Notion:", error);
+    // En caso de error, devolvemos un array vacío para evitar que la aplicación se rompa
+    return [];
+  }
+}
 
-export default function ShopPage() {
-  const { t } = useTranslation()
-  const [selectedCategory, setSelectedCategory] = useState("All")
-
+/**
+ * Página principal de la tienda
+ * Esta es una función asíncrona que carga datos desde Notion y luego renderiza
+ * el componente cliente para manejar la interactividad
+ */
+export default async function ShopPage() {
+  console.log('Renderizando ShopPage...');
+  
+  // Obtenemos los productos desde Notion con un try-catch para mayor seguridad
+  let products;
+  try {
+    products = await getProductsData();
+  } catch (error) {
+    console.error('Error fatal al obtener productos:', error);
+    products = []; // Fallback a un array vacío para evitar errores
+  }
+  
+  // Verificación adicional de seguridad
+  if (!products || !Array.isArray(products)) {
+    console.warn('Los productos no son un array válido en ShopPage');
+    products = []; // Garantizar que products sea siempre un array
+  }
+  
+  // Extraemos categorías únicas de los productos con manejo de errores
+  let uniqueCategories: string[] = [];
+  try {
+    uniqueCategories = Array.from(
+      new Set(products.map(product => product.category || 'Sin categoría'))
+    ).filter(category => category); // Filtrar categorías vacías
+  } catch (error) {
+    console.error('Error al extraer categorías:', error);
+  }
+  
+  // Creamos nuestro array de categorías con "All" al principio
   const categories = [
-    { id: "All", label: t("shop.all") },
-    { id: "Tanks", label: t("shop.tanks") },
-    { id: "Hoodies", label: t("shop.hoodies") },
-    { id: "Compression", label: t("shop.compression") },
-    { id: "Shorts", label: t("shop.shorts") },
-    { id: "Accessories", label: t("shop.accessories") },
-  ]
-
-  const filteredProducts =
-    selectedCategory === "All" ? products : products.filter((product) => product.category === selectedCategory)
-
-  return (
-    <div className="py-8 sm:py-12 md:py-20">
-      <div className="container mx-auto px-4">
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-8 md:mb-12 text-center">{t("shop.title")}</h1>
-
-        <div className="mb-8 md:mb-12 flex flex-wrap justify-center gap-2 sm:gap-4">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`
-                px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm uppercase tracking-wider
-                ${
-                  selectedCategory === category.id
-                    ? "bg-garnet text-white"
-                    : "bg-dark-gray text-white hover:bg-light-gray"
-                }
-              `}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              image={product.image}
-              price={product.price}
-              category={product.category}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+    { id: "All", label: "Todos" }, // Categoría predeterminada
+    ...uniqueCategories.map(category => ({
+      id: category,
+      label: category // Usamos el nombre de la categoría como etiqueta
+    }))
+  ];
+  
+  console.log(`Renderizando tienda con ${products.length} productos y ${categories.length} categorías`);
+  
+  // Delegamos el manejo de la interactividad al componente cliente
+  // con un objeto de propiedades seguro
+  return <ShopClient products={products} initialCategories={categories} />
 }
